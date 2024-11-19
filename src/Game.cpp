@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Logger.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <glm/glm.hpp>
@@ -7,16 +8,16 @@
 
 Game::Game() {
 	isRunning = false;
-	std::cout << "Game constructor called\n";
+	Logger::Log("Game constructor called!");
 }
 
 Game::~Game() {
-	std::cout << "Game destructor called\n";
+	Logger::Log("Game destructor called!");
 }
 
 void Game::Initialize() {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		std::cerr << "Error initializing SDL!" << std::endl;
+		Logger::Err("Error initializing SDL!");
 		return;
 	}
 	SDL_DisplayMode displayMode;
@@ -32,13 +33,13 @@ void Game::Initialize() {
 		SDL_WINDOW_BORDERLESS
 	);
 	if (!window) {
-		std::cerr << "Error creating SDL window!" << std::endl;
+		Logger::Err("Error creating SDL window!");
 		return;
 	}
 	renderer = SDL_CreateRenderer(window, -1, 0);
 
 	if (!renderer) {
-		std::cerr << "Error creating SDL renderer!" << std::endl;
+		Logger::Err("Error creating SDL renderer!");
 		return;
 	}
 
@@ -62,7 +63,7 @@ void Game::Update() {
 	}
 
 	double deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.0;
-	
+
 	// Store the current frame time
 	millisecsPreviousFrame = SDL_GetTicks();
 
