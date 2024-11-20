@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <imgui/imgui.h>
 #include <sol/sol.hpp>
-#include "Game.h"
+#include "./game/Game.h"
 
 int main(int argc, char* argv[]) {
 	// TODO: Do some magic!
