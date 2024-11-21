@@ -27,7 +27,15 @@ private:
 
 public:
 	Entity(int id) :id(id) {};
+	Entity(const Entity&) = default;
 	int GetId() const;
+
+	Entity& operator=(const Entity& other) = default;
+	bool operator == (const Entity& other) const { return id == other.GetId(); }
+	bool operator !=(const Entity& other) const { return id != other.GetId(); }
+	bool operator >(const Entity& other) const { return id > other.GetId(); }
+	bool operator <(const Entity& other) const { return id < other.GetId(); }
+
 };
 
 class System {
