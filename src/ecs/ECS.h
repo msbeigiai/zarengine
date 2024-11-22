@@ -55,7 +55,39 @@ public:
 	template <typename TComponent> void RequireComponent();
 };
 
-class Registry {};
+class IPool {
+public:
+	virtual ~IPool() {}
+};
+
+template <typename T>
+class Pool : public IPool {
+private:
+	std::vector<T> data;
+
+public:
+	Pool(int size = 100) { data.resize(size); }
+	virtual ~Pool() = default;
+
+	bool isEmpty() const { return data.empty(); }
+	int GetSize() const { return data.size(); }
+	void Resize(int n) { data.resize(n); }
+	void Clear() { data.clear(); }
+	void Add(T object) { data.push_back<T>(object); }
+	void Set(int index, T object) { data[index] = object; }
+	T& Get(int index) const { return static_cast<T&>(data[index]); }
+	T& operator[](unsigned index) { return data[index]; }
+};
+
+// Creation and destruction of everything...
+class Registry {
+private:
+	int numEntity = 0;
+
+	// Vector of components Pool
+	std::vector<IPool*> componentPool;
+
+};
 
 template <typename TComponent>
 void System::RequireComponent() {
