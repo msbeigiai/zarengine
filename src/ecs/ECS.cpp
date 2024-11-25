@@ -1,4 +1,7 @@
 #include "ECS.h"
+#include "../logger/Logger.h"
+
+int IComponent::nextId = 0;
 
 int Entity::GetId() const {
 	return id;
@@ -16,7 +19,7 @@ void System::RemoveEntityFromSystem(Entity entity)
 		}), entities.end());
 }
 
-std::vector<Entity> System::GetSystemEntities() const 
+std::vector<Entity> System::GetSystemEntities() const
 {
 	return entities;
 }
@@ -24,4 +27,38 @@ std::vector<Entity> System::GetSystemEntities() const
 const Signature& System::GetComponentSignature() const
 {
 	return componentSignature;
+}
+
+Entity Registry::CreateEntity() {
+	int entityId;
+	entityId = numEntities++;
+
+	Entity entity(entityId);
+
+	entitiesToBeAdded.insert(entity);
+
+	Logger::Log("Entity created with id = " + std::to_string(entityId));
+
+	return entity;
+}
+
+void Registry::AddEntityToSystems(Entity entity) {
+	const auto entityId = entity.GetId();
+	const auto& entityComponentSignature = entityComponentSignatures[entityId];
+
+	// Loop all the systems
+	for (auto& system : systems) {
+		const auto& systemComponentSignatur = system.second->GetComponentSignature();
+
+		bool isInterested = (entityComponentSignature & systemComponentSignatur) == systemComponentSignatur;
+
+		if (isInterested) {
+			system.second->AddEntityToSystem(entity);
+		}
+	}
+
+}
+
+void Registry::Update() {
+	// TODO: 
 }
