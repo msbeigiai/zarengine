@@ -19,7 +19,7 @@ public:
 
 			transform.position.x += rigidbody.velocity.x * deltaTime;
 			transform.position.y += rigidbody.velocity.y * deltaTime;
-		 }
+		}
 	}
 };
 

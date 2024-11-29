@@ -29,6 +29,8 @@ void AssetStore::AddTexture(SDL_Renderer* renderer, const std::string& assetId, 
 
 	// Add texture to the map
 	textures.emplace(assetId, texture);
+
+	Logger::Log("New texture added to asset store with Id: " + assetId);
 }
 
 SDL_Texture* AssetStore::GetTexture(const std::string& assetId)
