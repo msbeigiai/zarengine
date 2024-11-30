@@ -30,6 +30,7 @@ public:
 	void Update();
 	void Render();
 	void Destroy();
+	void LoadLevel(int level);
 
 	int windowWidth;
 	int windowHeight;

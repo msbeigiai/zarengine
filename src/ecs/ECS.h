@@ -39,7 +39,7 @@ private:
 	int id;
 
 public:
-	Entity(int id) : id(id) {};
+	Entity(int id) : id(id), registry(nullptr) {};
 	Entity(const Entity& entity) = default;
 	int GetId() const;
 
