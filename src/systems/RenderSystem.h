@@ -5,20 +5,38 @@
 #include "../components/TransformComponent.h"
 #include "../assetstore/AssetStore.h"
 #include <SDL.h>
+#include <algorithm>
 
 class RenderSystem : public System {
 public:
 	RenderSystem() {
 		RequireComponent<TransformComponent>();
 		RequireComponent<SpriteComponent>();
-
 	}
 
 	void Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore) {
 
+		struct RenderableEntity {
+			TransformComponent trasnformConmponent;
+			SpriteComponent spriteComponent;
+		};
+
+		std::vector<RenderableEntity> renderableEntities;
 		for (auto entity : GetSystemEntities()) {
-			const auto& transform = entity.GetComponent<TransformComponent>();
-			const auto sprite = entity.GetComponent<SpriteComponent>();
+			RenderableEntity renderableEntity;
+			renderableEntity.spriteComponent = entity.GetComponent<SpriteComponent>();
+			renderableEntity.trasnformConmponent = entity.GetComponent<TransformComponent>();
+			renderableEntities.emplace_back(renderableEntity);
+		}
+
+		// Sort the Vector by z-index value
+		std::sort(renderableEntities.begin(), renderableEntities.end(), [](const RenderableEntity& a, const RenderableEntity& b) {
+			return a.spriteComponent.zIndex < b.spriteComponent.zIndex;
+			});
+
+		for (auto entity : renderableEntities) {
+			const auto& transform = entity.trasnformConmponent;
+			const auto sprite = entity.spriteComponent;
 
 			// Set the source rectangle and destination
 			SDL_Rect srcRect = sprite.srcRect;
