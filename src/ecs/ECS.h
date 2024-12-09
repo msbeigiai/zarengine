@@ -7,6 +7,7 @@
 #include <typeindex>
 #include <set>
 #include <memory>
+#include <iostream>
 
 const unsigned int MAX_COMPONENTS = 32;
 
