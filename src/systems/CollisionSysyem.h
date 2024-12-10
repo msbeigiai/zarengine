@@ -13,7 +13,6 @@ public:
 	}
 
 	void Update() {
-		// AABB collision check
 		auto entities = GetSystemEntities();
 
 		for (auto i = entities.begin(); i != entities.end(); i++)
@@ -35,13 +34,14 @@ public:
 				auto bCollider = b.GetComponent<BoxColliderComponent>();
 
 				// Check for the collision between a and b
+				// AABB collision check
 				bool collisionHappened = CheckAABBCollision(
-					aTransform.position.x,
-					aTransform.position.y,
+					aTransform.position.x + aCollider.offset.x,
+					aTransform.position.y + aCollider.offset.y,
 					aCollider.width,
 					aCollider.height,
-					bTransform.position.x,
-					bTransform.position.y,
+					bTransform.position.x + bCollider.offset.x,
+					bTransform.position.y + bCollider.offset.y,
 					bCollider.width,
 					bCollider.height
 				);
@@ -57,11 +57,6 @@ public:
 
 	bool CheckAABBCollision(double aX, double aY, double aW, double aH, double bX, double bY, double bW, double bH)
 	{
-		return (
-			aX<bX + bW &&
-			aX + aW > bX &&
-			aY < bY + bH &&
-			aY + aH > bY
-			);
+		return (aX < bX + bW && aX + aW > bX && aY < bY + bH && aY + aH > bY);
 	}
 };
