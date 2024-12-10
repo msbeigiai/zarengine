@@ -10,6 +10,7 @@
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/CollisionSysyem.h"
+#include "../Systems/RenderColliderSyatem.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <glm/glm.hpp>
@@ -18,6 +19,7 @@
 
 Game::Game() {
 	isRunning = false;
+	isDebug = false;
 	registry = std::make_unique<Registry>();
 	assetStore = std::make_unique<AssetStore>();
 	Logger::Log("Game constructor called!");
@@ -68,6 +70,9 @@ void Game::ProcessInput() {
 			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
 				isRunning = false;
 			}
+			if (sdlEvent.key.keysym.sym == SDLK_d) {
+				isDebug = !isDebug;
+			}
 			break;
 		}
 	}
@@ -79,6 +84,8 @@ void Game::LoadLevel(int level) {
 	registry->AddSystem<RenderSystem>();
 	registry->AddSystem<AnimationSystem>();
 	registry->AddSystem<CollisionSystem>();
+	registry->AddSystem<RenderColliderSystem>();
+
 	// Adding assets to the asset store
 	assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
 	assetStore->AddTexture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
@@ -134,8 +141,7 @@ void Game::LoadLevel(int level) {
 	truck.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
 	truck.AddComponent<RigidBodyComponent>(glm::vec2(20.0, 0.0));
 	truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 2);
-	tank.AddComponent<BoxColliderComponent>(32, 32);
-
+	truck.AddComponent<BoxColliderComponent>(32, 32);
 }
 
 void Game::Setup() {
@@ -146,7 +152,6 @@ void Game::Update() {
 	// If we are too fast, waste some time until we reach the MILLISECS_PER_FRAME
 	int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
 	if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
-
 		SDL_Delay(timeToWait);
 	}
 
@@ -172,6 +177,9 @@ void Game::Render() {
 	// Invoke all the systems that need to render 
 	registry->GetSystem<RenderSystem>().Update(renderer, assetStore);
 
+	if (isDebug) {
+		registry->GetSystem<RenderColliderSystem>().Update(renderer);
+	}
 	SDL_RenderPresent(renderer);
 }
 
