@@ -7,6 +7,11 @@ int Entity::GetId() const {
 	return id;
 }
 
+void Entity::Kill()
+{
+	registry->KillEntity(*this);
+}
+
 void System::AddEntityToSystem(Entity entity) {
 	entities.push_back(entity);
 }
@@ -28,25 +33,38 @@ const Signature& System::GetComponentSignature() const {
 Entity Registry::CreateEntity() {
 	int entityId;
 
-	entityId = numEntities++;
+	if (freeIds.empty())
+	{
+		// if there are no free ids waiting to be used
+		entityId = numEntities++;
+		if (entityId >= entityComponentSignatures.size()) {
+			entityComponentSignatures.resize(entityId + 1);
+		}
+	}
+	else
+	{
+		entityId = freeIds.front();
+		freeIds.pop_front();
+	}
 
 	Entity entity(entityId);
 	entity.registry = this;
 	entitiesToBeAdded.insert(entity);
-
-	if (entityId >= entityComponentSignatures.size()) {
-		entityComponentSignatures.resize(entityId + 1);
-	}
 
 	Logger::Log("Entity created with id " + std::to_string(entityId));
 
 	return entity;
 }
 
+void Registry::KillEntity(Entity entity)
+{
+	entitiesToBeKilled.insert(entity);
+}
+
 void Registry::AddEntityToSystems(Entity entity) {
 	const auto entityId = entity.GetId();
 
-	const auto& entityComponentSignature = entityComponentSignatures[entityId];
+	const auto& entityComponentSignature = entityComponentSignatures.at(entityId);
 
 	for (auto& system : systems) {
 		const auto& systemComponentSignature = system.second->GetComponentSignature();
@@ -59,6 +77,14 @@ void Registry::AddEntityToSystems(Entity entity) {
 	}
 }
 
+void Registry::RemoveEntityFromSystems(Entity entity)
+{
+	for (auto system : systems)
+	{
+		system.second->RemoveEntityFromSystem(entity);
+	}
+}
+
 void Registry::Update() {
 	// Add the entities that are waiting to be created to the active Systems
 	for (auto entity : entitiesToBeAdded) {
@@ -67,4 +93,13 @@ void Registry::Update() {
 	entitiesToBeAdded.clear();
 
 	// TODO: Remove the entities that are waiting to be killed from the active Systems
+	for (auto entity : entitiesToBeKilled)
+	{
+		RemoveEntityFromSystems(entity);
+
+		entityComponentSignatures.at(entity.GetId()).reset();
+		// Make entity id available for use
+		freeIds.push_back(entity.GetId());
+	}
+	entitiesToBeKilled.clear();
 }

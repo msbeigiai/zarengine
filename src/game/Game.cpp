@@ -95,7 +95,7 @@ void Game::LoadLevel(int level) {
 
 	// Load the tilemap
 	int tileSize = 32;
-	double tileScale = 2.0;
+	double tileScale = 2.5;
 	int mapNumCols = 25;
 	int mapNumRows = 20;
 
@@ -142,6 +142,8 @@ void Game::LoadLevel(int level) {
 	truck.AddComponent<RigidBodyComponent>(glm::vec2(20.0, 0.0));
 	truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 2);
 	truck.AddComponent<BoxColliderComponent>(32, 32);
+
+	//tank.Kill();
 }
 
 void Game::Setup() {

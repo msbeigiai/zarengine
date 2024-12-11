@@ -8,6 +8,7 @@
 #include <set>
 #include <memory>
 #include <iostream>
+#include <deque>
 
 const unsigned int MAX_COMPONENTS = 32;
 
@@ -40,8 +41,9 @@ private:
 	int id;
 
 public:
-	Entity(int id) : id(id), registry(nullptr) {};
+	Entity(int id) : id(id) {};
 	Entity(const Entity& entity) = default;
+	void Kill();
 	int GetId() const;
 
 	Entity& operator =(const Entity& other) = default;
@@ -164,6 +166,9 @@ private:
 	std::set<Entity> entitiesToBeAdded;
 	std::set<Entity> entitiesToBeKilled;
 
+	// List of free entity ids that were previously removed
+	std::deque<int> freeIds;
+
 public:
 	Registry() {
 		Logger::Log("Registry constructor called");
@@ -178,6 +183,7 @@ public:
 
 	// Entity management
 	Entity CreateEntity();
+	void KillEntity(Entity entity);
 
 	// Component management
 	template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
@@ -191,9 +197,9 @@ public:
 	template <typename TSystem> bool HasSystem() const;
 	template <typename TSystem> TSystem& GetSystem() const;
 
-	// Checks the component signature of an entity and add the entity to the systems
-	// that are interested in it
+	// Add and remove entities from their systems
 	void AddEntityToSystems(Entity entity);
+	void RemoveEntityFromSystems(Entity entity);
 };
 
 template <typename TComponent>
@@ -235,7 +241,7 @@ void Registry::AddComponent(Entity entity, TArgs&& ...args) {
 	}
 
 	if (!componentPools[componentId]) {
-		std::shared_ptr<Pool<TComponent>> newComponentPool = std::make_shared<Pool<TComponent>>();
+		std::shared_ptr<Pool<TComponent>> newComponentPool(new Pool<TComponent>());
 		componentPools[componentId] = newComponentPool;
 	}
 
