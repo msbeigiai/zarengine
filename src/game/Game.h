@@ -3,6 +3,7 @@
 
 #include "../ecs/ECS.h"
 #include "../assetstore/AssetStore.h"
+#include "../event_bus/EventBus.h"
 #include <SDL.h>
 #include <memory>
 
@@ -19,6 +20,7 @@ private:
 
 	std::unique_ptr<Registry> registry;
 	std::unique_ptr<AssetStore> assetStore;
+	std::unique_ptr<EventBus> eventBus;
 
 public:
 	Game();
