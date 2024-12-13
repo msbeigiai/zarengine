@@ -33,6 +33,7 @@ private:
 
 	virtual void Call(Event& e) override
 	{
+		// ownerInstance->*callbackFunction(e)
 		std::invoke(callbackFunction, ownerInstance, static_cast<TEvent&>(e));
 	}
 public:
@@ -58,6 +59,12 @@ public:
 	~EventBus()
 	{
 		Logger::Log("EventBus destructor clled!");
+	}
+
+	// Clears the subscribers list
+	void Reset()
+	{
+		subscribers.clear();
 	}
 
 	template<typename TEvent, typename TOwner>
