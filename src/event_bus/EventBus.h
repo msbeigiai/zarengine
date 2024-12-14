@@ -68,11 +68,11 @@ public:
 	}
 
 	template<typename TEvent, typename TOwner>
-	void SubscribeToEvent(TOwner* ownerInstance, void(TOwner::* callbackFunction)(TEvent& e))
+	void SubscribeToEvent(TOwner* ownerInstance, void(TOwner::* callbackFunction)(TEvent&))
 	{
-		if (!subscribers.at(typeid(TEvent)).get())
+		if (!subscribers[typeid(TEvent)].get())
 		{
-			subscribers.at(typeid(TEvent)) = std::make_unique<HandlerList>();
+			subscribers[typeid(TEvent)] = std::make_unique<HandlerList>();
 		}
 		auto subscriber = std::make_unique<EventCallback<TOwner, TEvent>>(ownerInstance, callbackFunction);
 		subscribers.at(typeid(TEvent))->push_back(std::move(subscriber));
