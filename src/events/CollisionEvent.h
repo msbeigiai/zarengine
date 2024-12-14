@@ -3,7 +3,7 @@
 #include "../ecs/ECS.h"
 #include "../event_bus/Event.h"
 
-class CollisionEvent : Event
+class CollisionEvent : public Event
 {
 public:
 	Entity a;
