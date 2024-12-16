@@ -6,13 +6,13 @@
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimationComponent.h"
 #include "../Components/BoxColliderComponent.h"
-#include "../Components/KeyboardControlledComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/CollisionSystem.h"
 #include "../Systems/RenderColliderSyatem.h"
 #include "../Systems/DamageSystem.h"
+#include "../Systems/KeyboradControlSystem.h"
 #include "../events/KeyPressedEvent.h"
 #include <SDL.h>
 #include <SDL_image.h>
@@ -91,11 +91,12 @@ void Game::LoadLevel(int level) {
 	registry->AddSystem<CollisionSystem>();
 	registry->AddSystem<RenderColliderSystem>();
 	registry->AddSystem<DamageSystem>();
+	registry->AddSystem<KeyboardControlSystem>();
 
 	// Adding assets to the asset store
 	assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
 	assetStore->AddTexture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
-	assetStore->AddTexture(renderer, "chopper-image", "./assets/images/chpepper-sprotesheet.png");
+	assetStore->AddTexture(renderer, "chopper-image", "./assets/images/chopper-spritesheet.png");
 	assetStore->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
 	assetStore->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
 
@@ -192,6 +193,7 @@ void Game::Update() {
 
 	// Perform the subscription of events for all system
 	registry->GetSystem<DamageSystem>().SubscribeToEvents(eventBus);
+	registry->GetSystem<KeyboardControlSystem>().SubscribeToEvents(eventBus);
 
 	// Update the registry to process the entities that are waiting to be created/deleted
 	registry->Update();
