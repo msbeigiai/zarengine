@@ -7,18 +7,17 @@
 #include "../components/SpriteComponent.h"
 #include "../components/RigidBodyComponent.h"
 #include "../components/KeyboardControlledComponent.h"
-#include <SDL.h>
 
 class KeyboardControlSystem : public System 
 { 
 public:
 	KeyboardControlSystem(){
 		RequireComponent<KeyboardControlledComponent>();
-		RequireComponent<RigidBodyComponent>();
 		RequireComponent<SpriteComponent>();
+		RequireComponent<RigidBodyComponent>();
 	}
 
-	void SubscribeToEvent(std::unique_ptr<EventBus>& eventBus)
+	void SubscribeToEvents(std::unique_ptr<EventBus>& eventBus)
 	{ 
 		eventBus->SubscribeToEvent<KeyPressedEvent>(this, &KeyboardControlSystem::OnKeyPressed);
 	}
@@ -51,9 +50,6 @@ public:
 			case SDLK_LEFT:
 				rigidbody.velocity = keyboardControl.leftVelocity;
 				sprite.srcRect.y = sprite.height * 3;
-				break;
-
-			default:
 				break;
 			}
 
