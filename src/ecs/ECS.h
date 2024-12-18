@@ -241,6 +241,7 @@ void Registry::AddComponent(Entity entity, TArgs&& ...args) {
 	}
 
 	if (!componentPools[componentId]) {
+		// Pool<TComponent>* newComponentPool = new Pool<TComponent>();
 		std::shared_ptr<Pool<TComponent>> newComponentPool(new Pool<TComponent>());
 		componentPools[componentId] = newComponentPool;
 	}
